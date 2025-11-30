@@ -14,6 +14,9 @@ data/**
 # except their sub-folders
 !data/**/
 
+# allow DVC metadata files inside data/
+!data/**/*.dvc
+
 # also keep all .gitkeep files
 !.gitkeep
 

@@ -81,9 +81,6 @@ regressor:
   save_args:
     registered_model_name: spaceflights-regressor
 
-
-
-
 shuttle_passenger_capacity_plot_exp:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
   dataset: 

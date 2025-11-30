@@ -1,8 +1,0 @@
-[core]
-    remote = myremote
-['remote "storage"']
-    url = gdrive://1-K0G7XX0crgKGQ6Aqfo8H_BDjCRFc-o3
-['remote "myremote"']
-    url = gdrive://1-K0G7XX0crgKGQ6Aqfo8H_BDjCRFc-o3
-    gdrive_client_id = 1070311242202-8nolsdbj79qb1idoh69o9erl2192nogk.apps.googleusercontent.com
-    gdrive_client_secret = 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

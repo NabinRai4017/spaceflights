@@ -1,5 +1,5 @@
 outs:
-- md5: 27232c0437abb21ae79519fec9a24ac8
-  size: 223318
+- md5: e2232cfdda4b3d81c98e337ac50bd858
+  size: 223341
   hash: md5
   path: companies.csv

@@ -11,8 +11,10 @@ conf/**/*credentials*
 # ignore everything in the following folders
 data/**
 
+.dvc/
+
 # # except their sub-folders
-# !data/**/
+!data/**/
 
 # allow DVC metadata files inside data/
 !data/**/*.dvc

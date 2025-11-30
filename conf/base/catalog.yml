@@ -1,0 +1,174 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+#
+# We support interacting with a variety of data stores including local file systems, cloud, network and HDFS
+#
+# An example data set definition can look as follows:
+#
+#bikes:
+#  type: pandas.CSVDataset
+#  filepath: "data/01_raw/bikes.csv"
+#
+#weather:
+#  type: spark.SparkDataset
+#  filepath: s3a://your_bucket/data/01_raw/weather*
+#  file_format: csv
+#  credentials: dev_s3
+#  load_args:
+#    header: True
+#    inferSchema: True
+#  save_args:
+#    sep: '|'
+#    header: True
+#
+#scooters:
+#  type: pandas.SQLTableDataset
+#  credentials: scooters_credentials
+#  table_name: scooters
+#  load_args:
+#    index_col: ['name']
+#    columns: ['name', 'gear']
+#  save_args:
+#    if_exists: 'replace'
+#    # if_exists: 'fail'
+#    # if_exists: 'append'
+#
+# The Data Catalog supports being able to reference the same file using two different Dataset implementations
+# (transcoding), templating and a way to reuse arguments that are frequently repeated. See more here:
+# https://docs.kedro.org/en/stable/data/data_catalog.html
+
+companies:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/companies.csv
+
+reviews:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/reviews.csv
+
+shuttles:
+  type: pandas.ExcelDataset
+  filepath: data/01_raw/shuttles.xlsx
+  load_args:
+    engine: openpyxl
+
+preprocessed_companies:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/preprocessed_companies.parquet
+
+preprocessed_shuttles:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/preprocessed_shuttles.parquet
+
+
+# # Add the intermediate datasets to run only the inference
+# X_test:
+#   type: pandas.ParquetDataset
+#   filepath: data/05_model_input/X_test.parquet
+
+# y_test:
+#   type: pandas.CSVDataset  # https://github.com/pandas-dev/pandas/issues/54638
+#   filepath: data/05_model_input/y_test.csv
+
+model_input_table:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/model_input_table.parquet
+
+regressor:
+  type: kedro_mlflow.io.models.MlflowModelTrackingDataset
+  flavor: mlflow.sklearn
+  save_args:
+    registered_model_name: spaceflights-regressor
+
+
+
+
+shuttle_passenger_capacity_plot_exp:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset: 
+    type: plotly.PlotlyDataset
+    filepath: data/08_reporting/shuttle_passenger_capacity_plot_exp.json
+    versioned: false
+    plotly_args:
+      type: bar
+      fig:
+        x: shuttle_type
+        y: passenger_capacity
+        orientation: h
+      layout:
+        xaxis_title: Shuttles
+        yaxis_title: Average passenger capacity
+        title: Shuttle Passenger capacity
+
+shuttle_passenger_capacity_plot_go:
+  type: plotly.JSONDataset
+  filepath: data/08_reporting/shuttle_passenger_capacity_plot_go.json
+  versioned: false
+
+dummy_confusion_matrix:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset: 
+    type: matplotlib.MatplotlibDataset
+    filepath: data/08_reporting/dummy_confusion_matrix.png
+    versioned: false
+
+# ============ METRICS ============
+r2_score:
+  type: kedro_mlflow.io.metrics.MlflowMetricHistoryDataset
+  key: r2_score
+
+mae:
+  type: kedro_mlflow.io.metrics.MlflowMetricHistoryDataset
+  key: mae
+
+max_error:
+  type: kedro_mlflow.io.metrics.MlflowMetricHistoryDataset
+  key: max_error
+
+rmse:
+  type: kedro_mlflow.io.metrics.MlflowMetricHistoryDataset
+  key: rmse
+
+mape:
+  type: kedro_mlflow.io.metrics.MlflowMetricHistoryDataset
+  key: mape
+
+explained_variance:
+  type: kedro_mlflow.io.metrics.MlflowMetricHistoryDataset
+  key: explained_variance
+
+median_absolute_error:
+  type: kedro_mlflow.io.metrics.MlflowMetricHistoryDataset
+  key: median_absolute_error
+
+
+# ============ ARTIFACTS ============
+feature_coefficients_plot:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: matplotlib.MatplotlibDataset
+    filepath: data/08_reporting/feature_coefficients_plot.png
+    versioned: false
+
+residuals_plot:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: matplotlib.MatplotlibDataset
+    filepath: data/08_reporting/residuals_plot.png
+    versioned: false
+
+predictions_vs_actuals_plot:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: matplotlib.MatplotlibDataset
+    filepath: data/08_reporting/predictions_vs_actuals_plot.png
+    versioned: false
+
+residuals_histogram:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: matplotlib.MatplotlibDataset
+    filepath: data/08_reporting/residuals_histogram.png
+    versioned: false
+

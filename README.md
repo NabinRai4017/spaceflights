@@ -1,7 +1,7 @@
 # Spaceflights
 
 [![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MLflow](https://img.shields.io/badge/MLflow-tracking-blue)](https://mlflow.org/)
 [![DVC](https://img.shields.io/badge/DVC-data%20versioning-purple)](https://dvc.org/)
 

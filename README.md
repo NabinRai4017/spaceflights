@@ -1,100 +1,228 @@
-# spaceflights
+# Spaceflights
 
 [![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![MLflow](https://img.shields.io/badge/MLflow-tracking-blue)](https://mlflow.org/)
+[![DVC](https://img.shields.io/badge/DVC-data%20versioning-purple)](https://dvc.org/)
 
 ## Overview
 
-This is your new Kedro project, which was generated using `kedro 1.1.1`.
+**Spaceflights** is a machine learning project that predicts spaceflight shuttle prices using Linear Regression. Built with the Kedro framework, it demonstrates a complete ML pipeline including data processing, model training, evaluation, and experiment tracking.
 
-Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
+The project uses spaceflight-themed datasets containing:
+- **Shuttle specifications** - capacity, engines, crew, certifications
+- **Company information** - ratings, locations, fleet count, approvals
+- **Customer reviews** - ratings and pricing data
 
-## Rules and guidelines
+## Tech Stack
 
-In order to get the best out of the template:
+| Category | Technologies |
+|----------|-------------|
+| **ML Framework** | Kedro 1.1.1, scikit-learn 1.5.1 |
+| **Data Processing** | pandas, NumPy |
+| **Visualization** | matplotlib, seaborn, Plotly, Kedro-viz |
+| **Experiment Tracking** | MLflow, kedro-mlflow |
+| **Data Versioning** | DVC (Google Drive remote) |
+| **Testing** | pytest |
+| **Code Quality** | ruff |
 
-* Don't remove any lines from the `.gitignore` file we provide
-* Make sure your results can be reproduced by following a [data engineering convention](https://docs.kedro.org/en/stable/faq/faq.html#what-is-data-engineering-convention)
-* Don't commit data to your repository
-* Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
-
-## How to install dependencies
-
-Declare any dependencies in `requirements.txt` for `pip` installation.
-
-To install them, run:
+## Project Structure
 
 ```
+spaceflights/
+├── src/spaceflights/
+│   ├── pipelines/
+│   │   ├── data_processing/    # Data cleaning and preprocessing
+│   │   ├── data_science/       # Model training and evaluation
+│   │   └── reporting/          # Visualizations
+│   ├── hooks.py                # MLflow hooks
+│   └── pipeline_registry.py    # Pipeline registration
+├── conf/
+│   ├── base/                   # Shared configuration
+│   │   ├── catalog.yml         # Data catalog
+│   │   └── parameters_*.yml    # Pipeline parameters
+│   └── local/                  # Local configuration
+│       └── mlflow.yml          # MLflow settings
+├── data/
+│   ├── 01_raw/                 # Raw datasets
+│   ├── 02_intermediate/        # Preprocessed data
+│   ├── 05_model_input/         # Train/test splits
+│   ├── 06_models/              # Trained models
+│   └── 08_reporting/           # Generated visualizations
+├── tests/                      # Unit and integration tests
+└── notebooks/                  # Jupyter notebooks
+```
+
+## Installation
+
+### Prerequisites
+- Python >= 3.10
+- pip or conda
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/NabinRai4017/spaceflights.git
+cd spaceflights
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Or install with development dependencies
+pip install -e ".[dev]"
 ```
 
-## How to run your Kedro pipeline
+## Usage
 
-You can run your Kedro project with:
+### Run the Complete Pipeline
 
-```
+```bash
 kedro run
 ```
 
-## How to test your Kedro project
+### Run Specific Pipelines
 
-Have a look at the files `tests/test_run.py` and `tests/pipelines/data_science/test_pipeline.py` for instructions on how to write your tests. Run the tests as follows:
+```bash
+# Data processing only
+kedro run --pipeline=data_processing
 
+# Model training and evaluation
+kedro run --pipeline=data_science
+
+# Generate reports and visualizations
+kedro run --pipeline=reporting
 ```
+
+### Visualize Pipeline
+
+```bash
+kedro viz run
+```
+
+### View MLflow Experiments
+
+```bash
+mlflow ui
+# Opens at http://127.0.0.1:5000
+```
+
+## Pipelines
+
+### 1. Data Processing Pipeline
+
+Cleans and preprocesses raw data:
+- Converts rating percentages to floats
+- Parses price strings to numeric values
+- Handles boolean certification flags
+- Merges datasets into a single model input table
+
+**Input:** `companies.csv`, `reviews.csv`, `shuttles.xlsx`
+**Output:** `model_input_table` (Parquet)
+
+### 2. Data Science Pipeline
+
+Trains and evaluates the regression model:
+- 80/20 train/test split
+- Linear Regression model
+- Comprehensive evaluation metrics:
+  - R², MAE, RMSE, MAPE
+  - Max Error, Median Absolute Error
+  - Explained Variance
+
+**Features used:**
+- `engines`, `passenger_capacity`, `crew`
+- `d_check_complete`, `moon_clearance_complete`
+- `iata_approved`, `company_rating`, `review_scores_rating`
+
+**Visualizations generated:**
+- Feature coefficients bar chart
+- Residuals vs predicted values
+- Predictions vs actuals scatter plot
+- Residuals distribution histogram
+
+### 3. Reporting Pipeline
+
+Generates additional visualizations:
+- Passenger capacity comparison by shuttle type
+- Interactive Plotly charts
+
+## MLflow Integration
+
+All experiments are tracked with MLflow:
+
+- **Experiment name:** `spaceflights`
+- **Registered model:** `spaceflights-regressor`
+- **Tracked items:**
+  - Model parameters and hyperparameters
+  - Evaluation metrics
+  - Visualization artifacts
+  - System metrics (CPU, RAM, disk)
+
+## Data Version Control (DVC)
+
+Data files are version-controlled using DVC with Google Drive as remote storage:
+
+```bash
+# Pull data from remote
+dvc pull
+
+# Push data changes
+dvc push
+```
+
+## Testing
+
+```bash
+# Run all tests
 pytest
+
+# Run with coverage
+pytest --cov
+
+# Run specific test
+pytest tests/pipelines/data_science/test_pipeline.py
 ```
 
-You can configure the coverage threshold in your project's `pyproject.toml` file under the `[tool.coverage.report]` section.
+## Development
 
-## Project dependencies
+### Jupyter Notebooks
 
-To see and update the dependency requirements for your project use `requirements.txt`. You can install the project requirements with `pip install -r requirements.txt`.
-
-[Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
-
-## How to work with Kedro and notebooks
-
-> Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `catalog`, `context`, `pipelines` and `session`.
->
-> Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
-
-### Jupyter
-To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
-
-```
-pip install jupyter
-```
-
-After installing Jupyter, you can start a local notebook server:
-
-```
+```bash
+# Start Jupyter notebook with Kedro context
 kedro jupyter notebook
-```
 
-### JupyterLab
-To use JupyterLab, you need to install it:
-
-```
-pip install jupyterlab
-```
-
-You can also start JupyterLab:
-
-```
+# Or JupyterLab
 kedro jupyter lab
-```
 
-### IPython
-And if you want to run an IPython session:
-
-```
+# Or IPython
 kedro ipython
 ```
 
-### How to ignore notebook output cells in `git`
-To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
+Available variables in notebooks: `catalog`, `context`, `pipelines`, `session`
 
-> *Note:* Your output cells will be retained locally.
+### Code Quality
 
-## Package your Kedro project
+```bash
+# Lint code
+ruff check src/
 
-[Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/tutorial/package_a_project.html)
+# Format code
+ruff format src/
+```
+
+## Configuration
+
+| File | Purpose |
+|------|---------|
+| `conf/base/catalog.yml` | Data input/output definitions |
+| `conf/base/parameters_data_science.yml` | Model hyperparameters |
+| `conf/local/mlflow.yml` | MLflow server configuration |
+
+## License
+
+This project is licensed under the MIT License.
